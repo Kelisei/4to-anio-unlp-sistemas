@@ -1,22 +1,65 @@
 def boxplot_stats(col):
-    q1 = col.quantile(0.25)
-    q3 = col.quantile(0.75)
-    iqr = q3 - q1
+    """
+    Calculate boxplot statistics for a given pandas Series.
 
-    lower_whisker = q1 - 1.5 * iqr
-    upper_whisker = q3 + 1.5 * iqr
+    Parameters:
+        col (pandas.Series): The input data column for which to compute boxplot statistics.
 
-    mild_outliers_range = (q1 - 3 * iqr, q1 - 1.5 * iqr)
-    severe_outliers_range = (q3 + 1.5 * iqr, q3 + 3 * iqr)
+    Returns:
+        dict: A dictionary containing the following keys:
+            - "Q1": First quartile (25th percentile).
+            - "Q3": Third quartile (75th percentile).
+            - "Q2": Median (50th percentile).
+            - "IQR": Interquartile range (Q3 - Q1).
+            - "Lower whisker": The minimum value within 1.5*IQR below Q1.
+            - "Upper whisker": The maximum value within 1.5*IQR above Q3.
+            - "Mild outliers range (left)": Tuple indicating the range for mild outliers on the left (between 3*IQR and 1.5*IQR below Q1).
+            - "Mild outliers range (right)": Tuple indicating the range for severe outliers on the right (between 1.5*IQR and 3*IQR above Q3).
+            - "Max value": Maximum value in the column.
+            - "Min value": Minimum value in the column.
+
+    Note:
+        The function assumes the input is a pandas Series containing numerical data.
+    """
+    q1 = float(col.quantile(0.25))
+    q3 = float(col.quantile(0.75))
+    q2 = float(col.median())
+    iqr = float(q3 - q1)
+
+    lower_whisker = float(q1 - 1.5 * iqr)
+    upper_whisker = float(q3 + 1.5 * iqr)
+
+    lower_whisker= col[col >= lower_whisker].min()
+    upper_whisker = col[col <= upper_whisker].max()
+
+    mild_outliers_range = (float(q1 - 3 * iqr), float(q1 - 1.5 * iqr))
+    severe_outliers_range = (float(q3 + 1.5 * iqr), float(q3 + 3 * iqr))
 
     return {
         "Q1": q1,
         "Q3": q3,
+        "Q2": q2,
         "IQR": iqr,
         "Lower whisker": lower_whisker,
         "Upper whisker": upper_whisker,
-        "Mild outliers range": mild_outliers_range,
-        "Severe outliers range": severe_outliers_range,
+        "Mild outliers range (left)": mild_outliers_range,
+        "Mild outliers range (right)": severe_outliers_range,
         "Max value": col.max(),
         "Min value": col.min()
     }
+
+def print_boxplot_stats(series):
+    stats = boxplot_stats(series)
+    for key, value in stats.items():
+        print(key, value)
+
+
+def corr_type(num:float):
+    match abs(num):
+        case x if x < 0.5:
+            note = "No correlación"
+        case x if x >= 0.8:
+            note = "Fuerte correlación"
+        case _:
+            note = "Débil correlación"
+    return note

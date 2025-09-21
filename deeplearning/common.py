@@ -45,7 +45,11 @@ def boxplot_stats(col):
         "Mild outliers range (left)": mild_outliers_range,
         "Mild outliers range (right)": severe_outliers_range,
         "Max value": col.max(),
-        "Min value": col.min()
+        "Min value": col.min(),
+        "Extremes": col[(col < mild_outliers_range[0]) | (col > severe_outliers_range[1])].tolist(),
+        "Mild outliers": col[(col >= mild_outliers_range[0]) & (col <= mild_outliers_range[1]) | (col >= severe_outliers_range[0]) & (col <= severe_outliers_range[1])].tolist(),
+        "Num extremes": len(col[(col < mild_outliers_range[0]) | (col > severe_outliers_range[1])]),
+        "Num mild outliers": len(col[(col >= mild_outliers_range[0]) & (col <= mild_outliers_range[1]) | (col >= severe_outliers_range[0]) & (col <= severe_outliers_range[1])]),
     }
 
 def print_boxplot_stats(series):

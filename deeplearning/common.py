@@ -67,3 +67,18 @@ def corr_type(num:float):
         case _:
             note = "Débil correlación"
     return note
+
+
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
+
+def visualizar_en_2d(X_scaled, y):
+    tsne = TSNE(n_components=2, random_state=42)
+    X_tsne = tsne.fit_transform(X_scaled)
+    y_cat = y.astype("category")
+
+    plt.scatter(X_tsne[:,0], X_tsne[:,1], c=y_cat.cat.codes, cmap='viridis')
+    plt.title("Distribución de las clases en 2D usando t-SNE")
+    plt.xlabel("Dim 1")
+    plt.ylabel("Dim 2")
+    plt.show()
